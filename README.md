@@ -68,7 +68,9 @@ docker run --rm incident-rehearsal-lab:local list
 docker run --rm incident-rehearsal-lab:local demo stale-recovery > debrief.json
 ```
 
-The non-root container defaults to a scripted demo. Use the host Python command for the browser UI: its loopback-only listener intentionally does not accept Docker port forwarding. No container registry publishing is configured.
+The non-root container defaults to a scripted demo. Use the host Python command for the browser UI: its loopback-only listener intentionally does not accept Docker port forwarding.
+
+The **Container release** workflow tests both Linux amd64 and arm64 packages and images before publishing to `ghcr.io/narayana006/incident-rehearsal-lab`. Start it with `publish` disabled for a verification-only run. Published versions use `:0.1.0` and `:latest`; check the successful workflow run and the repository's Packages panel for availability.
 
 ## License and authorship
 
