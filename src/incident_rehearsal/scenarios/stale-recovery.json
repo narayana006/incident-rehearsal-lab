@@ -1,0 +1,16 @@
+{
+  "id":"stale-recovery", "title":"The dashboard is green, but is it fresh?", "duration":20,
+  "briefing":"A payments dashboard turned green after a configuration change. Decide whether recovery is real. Evidence timestamps and independent customer checks matter.",
+  "learning_objective":"Check telemetry freshness and independent customer signals before trusting apparent recovery.",
+  "evidence":[
+    {"id":"green-dashboard","at":0,"text":"Payments error dashboard displays 0.1% errors. The snapshot was generated 18 minutes ago; the incident started 12 minutes ago."},
+    {"id":"telemetry-gap","at":2,"text":"Metrics ingestion stopped 18 minutes ago. The dashboard continues rendering its last cached point."},
+    {"id":"customer-probe","at":3,"text":"Independent synthetic checkout probe: 24% failures over the most recent minute. Three support tickets report current payment failures."},
+    {"id":"config-diff","at":5,"text":"Change pay-routing-62 sent requests to a retired upstream. Service owner verified previous config pay-routing-61 and approved a simulated restore."}
+  ],
+  "actions":[
+    {"id":"restore-route","label":"Restore the verified previous payment route","requires":["customer-probe","config-diff"],"approval":"service_owner","outcome":"Verified route restoration requested in the simulation; a green cached dashboard remains insufficient.","effects":[{"id":"fresh-probe","after":3,"text":"Independent probe now succeeds on 99.9% of checkouts over 3 minutes. Payment reconciliation shows no new mismatch."}]},
+    {"id":"restore-telemetry","label":"Restart the synthetic telemetry pipeline","requires":["telemetry-gap"],"outcome":"Telemetry pipeline restart simulated; observe a fresh sample before using it.","effects":[{"id":"fresh-metrics","after":2,"text":"Metrics pipeline publishes a point generated at the current simulation minute. Its source timestamp and ingestion heartbeat are both current."}]},
+    {"id":"declare-recovery","label":"Declare verified customer recovery","requires":["fresh-probe","fresh-metrics"],"outcome":"Recovery recorded with fresh independent customer and telemetry evidence.","effects":[]}
+  ]
+}

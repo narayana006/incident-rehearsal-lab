@@ -1,0 +1,25 @@
+[build-system]
+requires = ["setuptools>=77"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "incident-rehearsal-lab"
+version = "0.1.0"
+description = "Offline incident decisions, evidence snapshots, and honest debriefs"
+readme = "README.md"
+requires-python = ">=3.11"
+license = "MIT"
+authors = [{name = "Narayana Vemburaj"}]
+dependencies = []
+
+[project.optional-dependencies]
+dev = ["pytest>=8", "build>=1"]
+
+[project.scripts]
+incident-lab = "incident_rehearsal.cli:main"
+
+[tool.setuptools.package-data]
+incident_rehearsal = ["scenarios/*.json", "ui.html"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

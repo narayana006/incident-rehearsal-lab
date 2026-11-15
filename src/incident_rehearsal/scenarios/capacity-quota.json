@@ -1,0 +1,16 @@
+{
+  "id":"capacity-quota", "title":"Quota is not regional capacity", "duration":20,
+  "briefing":"A compute scale-out request failed during a traffic surge. Determine whether an account quota or regional capacity is the limiting condition. Every change is simulated.",
+  "learning_objective":"Use the actual provider error and application constraints before choosing a quota increase or regional move.",
+  "evidence":[
+    {"id":"scale-failed","at":0,"text":"Provisioning 20 new workers failed. Existing workers are healthy but queue age is increasing."},
+    {"id":"provider-error","at":2,"text":"Synthetic provider response: InsufficientInstanceCapacity in region-a, zone-1. No account-limit error was returned."},
+    {"id":"quota-headroom","at":3,"text":"Regional vCPU quota: 640 allowed, 320 used. Requested change needs 80 vCPUs. Quota headroom is 320."},
+    {"id":"secondary-readiness","at":5,"text":"Region-b has available workers and a tested traffic route. Replication lag is 25 seconds; data policy allows this region. The incident commander accepts a 60-second recovery point objective."}
+  ],
+  "actions":[
+    {"id":"raise-quota","label":"Request an account quota increase","requires":["quota-headroom"],"outcome":"Quota request recorded. This branch illustrates a supported observation leading to an ineffective mitigation.","effects":[{"id":"quota-result","after":3,"text":"Quota increased in the simulation. Region-a zone-1 still returns InsufficientInstanceCapacity; queue age continues to rise."}]},
+    {"id":"failover","label":"Shift 25% of traffic to region-b","requires":["provider-error","quota-headroom","secondary-readiness"],"approval":"incident_commander","outcome":"A bounded 25% simulated traffic shift was requested; recovery checks are still needed.","effects":[{"id":"failover-observed","after":3,"text":"Region-b serves the shifted 25%. Queue age falls, error rate returns below 1%, and replication lag stays below 30 seconds."}]},
+    {"id":"declare-recovery","label":"Declare bounded mitigation successful","requires":["failover-observed"],"outcome":"Partial mitigation recorded. Remaining regional risk must be handed to the service owner.","effects":[]}
+  ]
+}

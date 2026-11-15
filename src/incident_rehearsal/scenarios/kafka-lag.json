@@ -1,0 +1,17 @@
+{
+  "id": "kafka-lag", "title": "Lag is a symptom", "duration": 20,
+  "briefing": "Checkout events are 12 minutes behind. You are the on-call engineer. Investigate using synthetic telemetry, cite evidence, and propose bounded actions. Advance the clock to receive updates.",
+  "learning_objective": "Separate a slow downstream dependency from consumer capacity, and verify recovery with more than a lag number.",
+  "evidence": [
+    {"id":"lag-alert","at":0,"text":"Consumer group checkout: lag 180,000 records, oldest event 12 minutes; producer rate stable at 250/s."},
+    {"id":"consumer-cpu","at":2,"text":"Six consumer workers average 22% CPU. No rebalance events in the last 30 minutes."},
+    {"id":"db-latency","at":4,"text":"Database write p99 increased from 40 ms to 2.8 s after deployment checkout-api-184. Consumers wait on writes."},
+    {"id":"rollback-ready","at":5,"text":"Service owner confirms checkout-api-183 is compatible with current schema; rollback takes 2 minutes."},
+    {"id":"capacity-risk","at":7,"text":"Database connection use is 94%. Adding workers would add more database connections."}
+  ],
+  "actions": [
+    {"id":"scale-consumers","label":"Add two consumer workers","requires":["lag-alert","consumer-cpu","capacity-risk"],"approval":"incident_commander","outcome":"Two simulated workers requested; connection pressure is intentionally modeled as a tradeoff.","effects":[{"id":"scaled-connections","after":2,"text":"After scaling: connection use reaches 100%, write retries rise, and throughput remains 250/s. CPU was not the limiting resource."}]},
+    {"id":"rollback-api","label":"Roll back the database-writing API deployment","requires":["db-latency","rollback-ready"],"approval":"service_owner","outcome":"A simulated rollback request was accepted; verify the resulting telemetry before declaring recovery.","effects":[{"id":"rollback-metrics","after":2,"text":"Deployment 183 restored. Write p99 is 45 ms, consumer throughput 500/s, and lag is draining."},{"id":"rollback-verified","after":5,"text":"Oldest event age is below 1 minute. Checkout success and downstream reconciliation match the baseline."}]},
+    {"id":"declare-recovery","label":"Declare recovery and end mitigation","requires":["rollback-verified"],"outcome":"Recovery declaration recorded using customer and pipeline verification.","effects":[]}
+  ]
+}

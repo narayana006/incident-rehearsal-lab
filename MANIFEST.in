@@ -1,0 +1,3 @@
+include SCENARIOS.md CONTRIBUTING.md LICENSE README.md
+recursive-include src/incident_rehearsal/scenarios *.json
+include src/incident_rehearsal/ui.html
