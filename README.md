@@ -12,6 +12,27 @@ Three complete exercises ship in v0.1:
 
 No accounts, keys, cloud API calls, external model, attack traffic or paid resources are required. The runtime uses only Python's standard library. This project is independently usable; it does not depend on GameDay Arena.
 
+## Install the published release
+
+Python 3.11 or newer:
+
+```sh
+python3 -m venv .venv
+. .venv/bin/activate
+python -m pip install https://github.com/narayana006/incident-rehearsal-lab/releases/download/v0.1.0/incident_rehearsal_lab-0.1.0-py3-none-any.whl
+incident-lab list
+```
+
+[Release downloads and checksums](https://github.com/narayana006/incident-rehearsal-lab/releases/tag/v0.1.0)
+include the wheel and source archive.
+
+The public container supports Linux amd64 and arm64 and can be pulled without a
+GitHub login:
+
+```sh
+docker run --rm --read-only --network none --cap-drop ALL ghcr.io/narayana006/incident-rehearsal-lab:0.1.0 list
+```
+
 ## Run locally
 
 Python 3.11 or later:
